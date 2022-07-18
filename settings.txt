@@ -1,0 +1,57 @@
+Send: M211
+Recv: echo:Soft endstops: ON  Min:  X-20.0000 Y-20.0000 Z-3.0000   Max:  X200.0000 Y200.0000 Z217.0000
+Send: M851
+Recv: Probe Offset X-37.0000 Y-32.0000 Z-5.7000
+
+3904B346225F44A6BCEA28B4CA4E1DA9
+
+M150 I255
+M300 S1000 P500
+G90 ; use absolute coordinates
+M83 ; extruder relative mode
+G21 ;Metric values
+M73 ;LCD progress info
+M140 S[first_layer_bed_temperature] ; set bed temp
+M190 S[first_layer_bed_temperature] ; wait for bed temp
+M300 S1000 P500
+M117 Poziomowanie...
+G28; home all
+G29; Auto bed leveling
+M420 S1; Save bed leveling mesh
+G1 Z2 F240 ; moving to safe point
+G1 X2 Y10 F3000 ; moving to safe point
+G1 Z0.28 F240 ; moving to safe point
+M117 Rozgrzewanie...
+M104 S[first_layer_temperature] ; set extruder temp
+M109 S[first_layer_temperature] ; wait for extruder temp
+M300 S1000 P500
+G92 E0.0 ; reset extruder
+M117 Anty-blob...
+G1 Y210 E15.0 F1500.0 ; intro line
+G1 X2.3 F5000 ; intro line
+G1 Y10 E30 F1200.0 ; intro line
+G92 E0.0; reset extruder
+G1 Z2.0 F3000 ; Move Z Axis up little to prevent scratching of Heat Bed
+G1 X5 Y20 Z0.3 F5000.0 ; Move over to prevent blob squish
+M117 Drukowanie...
+
+M150 U255
+M117 Koniec
+M300 S1000 P500
+M104 S0 ; turn off temperature
+M140 S0 ; turn off heatbed
+M107 ; turn off fan
+M117 Pokazywanie druku...
+M300 S1000 P500
+{if layer_z < max_print_height}G1 Z{z_offset+min(layer_z+10, max_print_height)} F600{endif} ; Move print head up
+G1 X0 Y200 F3000 ; present print
+M84 X Y E ; disable motors
+M300 S1000 P500
+
+;BEFORE_LAYER_CHANGE
+;[layer_z]
+M117 Warstwa {layer_num+1} z [total_layer_count]
+
+
+;AFTER_LAYER_CHANGE
+;{layer_z}
